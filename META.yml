@@ -5,7 +5,7 @@ author:
 build_requires:
   ExtUtils::MakeMaker: 0
 configure_requires:
-  Archive::Unzip::Burst: 0
+  Archive::Extract: 0
   File::ShareDir::Install: 0
   LWP::Simple: 0
 dynamic_config: 1
@@ -28,4 +28,4 @@ requires:
 resources:
   bugtracker: https://github.com/hoytech/Thrust/issues
   repository: git://github.com/hoytech/Thrust.git
-version: 0.100
+version: 0.101
