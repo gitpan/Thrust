@@ -2,7 +2,7 @@ package Thrust;
 
 use common::sense;
 
-our $VERSION = '0.101';
+our $VERSION = '0.200';
 
 use AnyEvent;
 use AnyEvent::Util;
@@ -10,11 +10,12 @@ use AnyEvent::Handle;
 use JSON::XS;
 use File::ShareDir;
 use Scalar::Util;
+use Alien::Thrust;
 
 use Thrust::Window;
 
 
-our $THRUST_PATH = File::ShareDir::dist_dir('Thrust') .  '/thrust_shell';
+
 our $THRUST_BOUNDARY = "\n--(Foo)++__THRUST_SHELL_BOUNDARY__++(Bar)--\n";
 
 
@@ -51,7 +52,7 @@ sub new {
 
   my ($fh1, $fh2) = portable_socketpair();
 
-  $self->{cv} = run_cmd [ $THRUST_PATH ],
+  $self->{cv} = run_cmd [ $Alien::Thrust::thrust_shell_binary ],
                         close_all => 1,
                         '>' => $fh2,
                         '<' => $fh2,
@@ -127,6 +128,8 @@ sub do_action {
 sub window {
   my ($self, %args) = @_;
 
+  $self = Thrust->new if !ref $self; ## in case you forget the ->new in one-liners
+
   my $window = { thrust => $self, };
   bless $window, 'Thrust::Window';
 
@@ -189,9 +192,11 @@ Like the bindings for other languages, installing the perl module will download 
 
 Unlike the bindings for other languages, in the perl ones there are no definitions for individual thrust methods. Instead, an AUTOLOAD is used to automatically "forward" all perl method calls (and their JSON encoded arguments) to the thrust shell. This has the advantage that there is generally no need to do anything to the perl bindings when new methods/parameters are added to the thrust shell. However, it has the disadvantage that sometimes the API is less convenient. For instance, instead of positional arguments in (for example) the C<move> method, you must use the named C<x> and C<y> parameters.
 
-Like the bindings in other languages, methods can be invoked on a window object even before the window is created. The methods will be queued up and invoked in order once the window is ready. After that point, all messages are delivered to the window asynchronously. Unlike the other bindings, the perl bindings also support method chaining and a special C<run> method on the window. For example, here is a one-liner command to open a maximized window with the dev tools console expanded:
+Like the bindings in other languages, methods can be invoked on a window object even before the window is created. The methods will be queued up and invoked in order once the window is ready. After that point, all messages are delivered to the window asynchronously. For example, here is a one-liner command to open a maximized window with the dev tools console expanded:
 
-    $ perl -MThrust -e 'Thrust->new->window->show->maximize->open_devtools->run'
+    $ perl -MThrust -e 'Thrust->window->show->maximize->open_devtools->run'
+
+To understand how the above works, consider that the perl bindings also support some one-liner shortcuts such as method chaining, an implicit C<Thrust> context created by C<window>, and a C<run> method on the window.
 
 =head1 ASYNC PROGRAMMING
 
@@ -324,6 +329,8 @@ The fact that C<thrust_shell> binaries are duplicated for every language binding
 =head1 SEE ALSO
 
 L<The Thrust perl module github repo|https://github.com/hoytech/Thrust>
+
+L<Alien::Thrust>
 
 L<The Thrust project|https://github.com/breach/thrust> - Official website
 

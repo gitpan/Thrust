@@ -48,12 +48,15 @@ DESCRIPTION
     Like the bindings in other languages, methods can be invoked on a window
     object even before the window is created. The methods will be queued up
     and invoked in order once the window is ready. After that point, all
-    messages are delivered to the window asynchronously. Unlike the other
-    bindings, the perl bindings also support method chaining and a special
-    "run" method on the window. For example, here is a one-liner command to
-    open a maximized window with the dev tools console expanded:
+    messages are delivered to the window asynchronously. For example, here
+    is a one-liner command to open a maximized window with the dev tools
+    console expanded:
 
-        $ perl -MThrust -e 'Thrust->new->window->show->maximize->open_devtools->run'
+        $ perl -MThrust -e 'Thrust->window->show->maximize->open_devtools->run'
+
+    To understand how the above works, consider that the perl bindings also
+    support some one-liner shortcuts such as method chaining, an implicit
+    "Thrust" context created by "window", and a "run" method on the window.
 
 ASYNC PROGRAMMING
     Like browser programming itself, programming the perl side of a Thrust
@@ -231,6 +234,8 @@ BUGS
 
 SEE ALSO
     The Thrust perl module github repo <https://github.com/hoytech/Thrust>
+
+    Alien::Thrust
 
     The Thrust project <https://github.com/breach/thrust> - Official website
 
